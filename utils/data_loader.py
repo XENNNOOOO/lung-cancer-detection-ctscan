@@ -4,9 +4,17 @@ import tensorflow as tf
 IMAGE_SIZE = (224, 224)
 BATCH_SIZE = 32
 
+# Data augmentation pipeline
+data_augmentation = tf.keras.Sequential([
+    tf.keras.layers.RandomFlip("horizontal"),
+    tf.keras.layers.RandomRotation(0.1),
+    tf.keras.layers.RandomZoom(0.1),
+])
+
 def get_datasets(data_dir="dataset"):
     """
     Loads train, validation, and test datasets from the specified folder.
+    Applies data augmentation to the training dataset.
 
     Args:
         data_dir (str): Path to the dataset folder containing 'train', 'valid', 'test' subfolders.
@@ -39,6 +47,9 @@ def get_datasets(data_dir="dataset"):
     )
 
     class_names = train_ds.class_names
+
+    # Apply data augmentation only to training dataset
+    train_ds = train_ds.map(lambda x, y: (data_augmentation(x, training=True), y))
 
     # Optimize performance
     AUTOTUNE = tf.data.AUTOTUNE

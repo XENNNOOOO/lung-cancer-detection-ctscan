@@ -11,46 +11,42 @@ sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 from utils.data_loader import get_datasets
 from models.model import build_model
 
-
-def train_model():
+def train_model(fine_tune=False):
     # Load datasets
     train_ds, val_ds, test_ds, class_names = get_datasets(data_dir="./dataset")
 
-    # Optimize dataset performance
-    AUTOTUNE = tf.data.AUTOTUNE
-    train_ds = train_ds.cache().prefetch(buffer_size=AUTOTUNE)
-    val_ds = val_ds.cache().prefetch(buffer_size=AUTOTUNE)
-    test_ds = test_ds.cache().prefetch(buffer_size=AUTOTUNE)
-
     # Build model
-    model = build_model(num_classes=len(class_names))
-
-    # Compile model
-    model.compile(
-        optimizer=tf.keras.optimizers.Adam(learning_rate=1e-4),
-        loss="sparse_categorical_crossentropy",
-        metrics=["accuracy"]
-    )
+    # Use smaller learning rate if fine-tuning
+    learning_rate = 1e-4 if not fine_tune else 1e-5
+    model = build_model(num_classes=len(class_names), learning_rate=learning_rate, fine_tune=fine_tune)
 
     # Callbacks
     checkpoint_cb = tf.keras.callbacks.ModelCheckpoint(
-        filepath="../models/best_model.keras",
+        filepath="./models/best_model.keras",
         monitor="val_accuracy",
         save_best_only=True,
         verbose=1
     )
+
     earlystop_cb = tf.keras.callbacks.EarlyStopping(
         monitor="val_accuracy",
         patience=5,
         restore_best_weights=True
     )
 
+    lr_scheduler_cb = tf.keras.callbacks.ReduceLROnPlateau(
+        monitor="val_loss",
+        factor=0.5,
+        patience=3,
+        verbose=1
+    )
+
     # Train
     history = model.fit(
         train_ds,
         validation_data=val_ds,
-        epochs=20,
-        callbacks=[checkpoint_cb, earlystop_cb]
+        epochs=30,  # increase epochs for fine-tuning
+        callbacks=[checkpoint_cb, earlystop_cb, lr_scheduler_cb]
     )
 
     # Evaluate on test set
@@ -58,11 +54,13 @@ def train_model():
     print(f"Test Accuracy: {test_acc:.4f}")
 
     # Save final model
-    model.save("../models/final_model.keras")
-    print("Model saved to ../models/final_model.keras")
+    model.save("./models/final_model.keras")
+    print("Model saved to ./models/final_model.keras")
 
     return history, model, class_names
 
-
 if __name__ == "__main__":
-    train_model()
+    # Set fine_tune=True to enable fine-tuning
+    train_model(fine_tune=True)
+    
+# python3 -m src.train
