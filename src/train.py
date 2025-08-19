@@ -1,11 +1,20 @@
 import os
+print("Current working directory:", os.getcwd())
+print("Expected dataset path:", os.path.abspath("./dataset"))
+
 import tensorflow as tf
+import sys
+
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
+
 from utils.data_loader import get_datasets
-from models.model import build_efficientnet_model
+from models.model import build_model
+
 
 def train_model():
     # Load datasets
-    train_ds, val_ds, test_ds, class_names = get_datasets(data_dir="../dataset")
+    train_ds, val_ds, test_ds, class_names = get_datasets(data_dir="./dataset")
 
     # Optimize dataset performance
     AUTOTUNE = tf.data.AUTOTUNE
@@ -14,7 +23,7 @@ def train_model():
     test_ds = test_ds.cache().prefetch(buffer_size=AUTOTUNE)
 
     # Build model
-    model = build_efficientnet_model(num_classes=len(class_names))
+    model = build_model(num_classes=len(class_names))
 
     # Compile model
     model.compile(
