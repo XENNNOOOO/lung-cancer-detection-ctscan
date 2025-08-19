@@ -24,14 +24,15 @@ def build_model(img_size=(224, 224, 3), num_classes=4, learning_rate=1e-4, fine_
     base_model.trainable = False  # Freeze base model by default
 
     if fine_tune:
-        # Unfreeze last 20 layers for fine-tuning
-        for layer in base_model.layers[-20:]:
-            layer.trainable = True
+        # Fine-tune last 50 layers only
+        base_model.trainable = True
+        for layer in base_model.layers[:-50]:
+            layer.trainable = False
 
     # Add custom classification layers
     x = base_model.output
     x = GlobalAveragePooling2D()(x)
-    x = Dropout(0.3)(x)  # Dropout for regularization
+    x = Dropout(0.4)(x)  # Dropout for regularization
     outputs = Dense(num_classes, activation="softmax")(x)
 
     model = Model(inputs=base_model.input, outputs=outputs)
