@@ -1,11 +1,9 @@
-__pycache__/
-*.pyc
+models/__pycache__/*.pyc
 
 datasets/
 
-models/
-*.keras
+models/*.keras
 
-/logs
+logs/
 
 .DS_Store
