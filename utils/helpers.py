@@ -8,14 +8,17 @@ def create_dir(path):
     if not os.path.exists(path):
         os.makedirs(path)
 
-def save_history(history, filename="training_history.json"):
+def save_history(history, filename="results/training_history.json"):
     """Save training history as JSON."""
+    create_dir(os.path.dirname(filename))
     hist_dict = history.history
     with open(filename, "w") as f:
         json.dump(hist_dict, f)
 
-def plot_history(history, save_path=None):
+def plot_history(history, save_path="results/training_history.png"):
     """Plot training accuracy and loss curves."""
+    create_dir(os.path.dirname(save_path))
+    
     acc = history.history["accuracy"]
     val_acc = history.history["val_accuracy"]
     loss = history.history["loss"]
@@ -41,12 +44,14 @@ def plot_history(history, save_path=None):
     plt.legend()
     plt.title("Model Loss")
 
-    if save_path:
-        plt.savefig(save_path)
+    plt.tight_layout()
+    plt.savefig(save_path)
     plt.show()
     
-def preprocess(ds, num_classes):
+def preprocess(ds, num_classes=7):
+    """Normalize dataset and one-hot encode labels."""
     return ds.map(lambda x, y: (x, tf.one_hot(y, depth=num_classes)))
 
 def augment(ds, data_augmentation):
+    """Apply data augmentation to dataset."""
     return ds.map(lambda x, y: (data_augmentation(x, training=True), y))

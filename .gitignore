@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+
+datasets/
+
+models/
+*.keras
+
+.DS_Store

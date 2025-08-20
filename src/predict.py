@@ -4,18 +4,27 @@ import tensorflow as tf
 import matplotlib.pyplot as plt
 
 # Paths
-MODEL_PATH = "saved_models/best_model.keras"
+MODEL_PATH = "models/final_model.keras"  # updated to your final combined model
 
-# Hyperparameters
+# Updated class names to match MASTER_CLASSES
+CLASS_NAMES = [
+    "Normal",
+    "Adenocarcinoma",
+    "Large Cell Carcinoma",
+    "Squamous Cell Carcinoma",
+    "Benign",
+    "Malignant",
+    "Other"
+]
+
 IMG_SIZE = (224, 224)
-CLASS_NAMES = ["Normal", "Adenocarcinoma", "Large Cell Carcinoma", "Squamous Cell Carcinoma"]
 
 def preprocess_image(img_path, img_size=IMG_SIZE):
     """Load and preprocess an image for prediction."""
     img = tf.keras.utils.load_img(img_path, target_size=img_size)
     img_array = tf.keras.utils.img_to_array(img)
-    img_array = np.expand_dims(img_array, axis=0)  # batch dimension
-    img_array = img_array / 255.0  # normalize
+    img_array = np.expand_dims(img_array, axis=0)  # Add batch dimension
+    img_array = img_array / 255.0  # Normalize
     return img_array, img
 
 def predict_image(img_path):
@@ -36,6 +45,6 @@ def predict_image(img_path):
     plt.show()
 
 if __name__ == "__main__":
-    # Example usage: change the path to a test image from your dataset
-    test_image_path = "dataset/adenocarcinoma/adenocarcinoma_001.jpg"
+    # Example usage: change the path to any image you want to test
+    test_image_path = "datasets/dataset_1/test/adenocarcinoma/adenocarcinoma_001.jpg"
     predict_image(test_image_path)
