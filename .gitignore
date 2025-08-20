@@ -1,8 +1,4 @@
-models/__pycache__/*.pyc
-
 datasets/
-
-models/*.keras
 
 logs/
 
