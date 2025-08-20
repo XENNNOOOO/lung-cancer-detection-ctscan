@@ -6,4 +6,6 @@ datasets/
 models/
 *.keras
 
+/logs
+
 .DS_Store
