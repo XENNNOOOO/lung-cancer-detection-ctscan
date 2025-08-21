@@ -6,7 +6,7 @@ from tensorflow.keras.optimizers import Adam
 
 def build_model(
     img_size=(224, 224, 3),
-    num_classes=6,  # match MASTER_CLASSES
+    num_classes=6,  
     learning_rate=1e-4,
     fine_tune=False
 ):

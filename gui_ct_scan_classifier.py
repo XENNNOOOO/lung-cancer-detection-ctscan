@@ -1,13 +1,13 @@
 import tkinter as tk
 from tkinter import filedialog, messagebox
 from PIL import Image, ImageTk
-from PIL.Image import Resampling  # CHANGED: Use modern Resampling
+from PIL.Image import Resampling 
 import numpy as np
 import tensorflow as tf
 
 # --- Configuration ---
 
-MODEL_PATH = "./models/final_model.keras"
+MODEL_PATH = "./models/best_model.keras"
 class_names = [
     "Normal",
     "Adenocarcinoma",
@@ -18,7 +18,7 @@ class_names = [
 ]
 IMAGE_SIZE = (224, 224)
 
-# --- Model Loading ---
+# Model Loading
 
 try:
     model = tf.keras.models.load_model(MODEL_PATH)
@@ -26,13 +26,12 @@ except Exception as e:
     messagebox.showerror("Model Loading Error", f"Failed to load the model:\n{e}")
     exit()
 
-# --- Core Functions ---
+# Core Functions
 
 def preprocess_image(img_path):
     """Load and preprocess image for prediction."""
     try:
         img = Image.open(img_path).convert("RGB")
-        # CHANGED: Use modern, high-quality resampling method
         img = img.resize(IMAGE_SIZE, Resampling.LANCZOS)
         img_array = np.array(img) / 255.0
         img_array = np.expand_dims(img_array, axis=0)
@@ -85,18 +84,17 @@ def open_file():
     main_result_label.config(text=main_pred)
     detailed_result_label.config(text=f"Class Probabilities:\n{detailed_probs}")
 
-# --- GUI Setup ---
+# GUI Setup
 
 root = tk.Tk()
 root.title("Lung CT Scan Classifier")
 root.geometry("700x800") 
 root.configure(bg="#f0f0f0") # Light gray background
 
-# Main frame for better organization
 main_frame = tk.Frame(root, bg="#f0f0f0", padx=20, pady=20)
 main_frame.pack(expand=True, fill="both")
 
-# --- Widgets ---
+# Widgets
 
 # Button to select an image
 btn_select = tk.Button(
